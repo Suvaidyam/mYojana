@@ -1,31 +1,24 @@
 import frappe
 
 def update_age():
+    # TIMESTAMPDIFF(YEAR,...) already handles the birthday-month/day comparison
+    # correctly, so both CASE branches are identical — simplified here.
     query = """
         UPDATE
             `tabBeneficiary Profiling`
         SET
-            completed_age = (
-                CASE
-                    WHEN MONTH(CURDATE()) < MONTH(date_of_birth) OR (MONTH(CURDATE()) = MONTH(date_of_birth) AND DAY(CURDATE()) < DAY(date_of_birth)) THEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE())
-                    ELSE TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE())
-            END
-            ),
-            completed_age_month = (TIMESTAMPDIFF(MONTH, date_of_birth, CURDATE()) % 12)
+            completed_age = TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()),
+            completed_age_month = TIMESTAMPDIFF(MONTH, date_of_birth, CURDATE()) %% 12
         WHERE
-            completed_age != (
-                CASE
-                    WHEN MONTH(CURDATE()) < MONTH(date_of_birth) OR (MONTH(CURDATE()) = MONTH(date_of_birth) AND DAY(CURDATE()) < DAY(date_of_birth)) THEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE())
-                    ELSE TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE())
-                END
-            )
-            OR
-            completed_age_month != (TIMESTAMPDIFF(MONTH, date_of_birth, CURDATE()) % 12);
+            completed_age != TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE())
+            OR completed_age_month != TIMESTAMPDIFF(MONTH, date_of_birth, CURDATE()) %% 12
     """
     try:
-        data = frappe.db.sql(query, as_dict=True)
+        frappe.db.sql(query)
+        frappe.db.commit()
+        frappe.logger().info("ben_dob_update: update_age completed successfully")
     except Exception as e:
-        frappe.throw(str(e))
+        frappe.log_error(f"ben_dob_update.update_age failed: {e}", "Scheduler Error")
 
 def update_dob_of_ben():
     query = """UPDATE `tabBeneficiary Profiling`
