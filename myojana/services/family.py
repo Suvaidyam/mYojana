@@ -50,8 +50,8 @@ class family:
                 # print("family",family)
                 if family:
                     # print("_doc_before_save[IF->IF->IF]")
-                    query = f"UPDATE `tabBeneficiary Profiling` SET select_primary_member = '{family_doc.name}' WHERE select_primary_member = '{_doc_before_save.select_primary_member}'"
-                    up_doc = frappe.db.sql(query)
+                    query = "UPDATE `tabBeneficiary Profiling` SET select_primary_member = %s WHERE select_primary_member = %s"
+                    up_doc = frappe.db.sql(query, (family_doc.name, _doc_before_save.select_primary_member))
                     # print("_doc_before_save[IF->IF->IF] up_doc",up_doc,query)
                     del_doc = frappe.db.delete("Primary Member", {"name": _doc_before_save.select_primary_member})
                     # print("_doc_before_save[IF->IF->IF] del_doc",del_doc)

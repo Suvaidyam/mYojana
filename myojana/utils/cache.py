@@ -15,13 +15,14 @@ class  Cache:
             # Check if there's only one value for the current key
             if len(values) == 1:
                 # Create a condition for the single value
+                escaped = frappe.db.escape(str(values[0]))
                 if table_name:
-                    where_clauses.append(f"{table_name}.{key} = '{values[0]}'")
+                    where_clauses.append(f"{table_name}.{key} = {escaped}")
                 else:
-                    where_clauses.append(f"{key} = '{values[0]}'")
+                    where_clauses.append(f"{key} = {escaped}")
             else:
                 # Create an IN condition for multiple values
-                val = [f"'{value}'" for value in values]
+                val = [frappe.db.escape(str(value)) for value in values]
                 if(table_name):
                     in_clause = f"{table_name+'.'+key} IN ({', '.join(val)})"
                 else:

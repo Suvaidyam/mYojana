@@ -28,10 +28,11 @@ class Misc:
                 # if not rule.group:
                 #     gIndex += 1
                 #     groups[f"G{gIndex}"] = [f"{rule.rule_field} {rule.operator} '{rule.data}'"]
+                escaped_data = frappe.db.escape(str(rule.data))[1:-1]
                 if groups.get(rule.group) is None:
-                    groups[rule.group] = [f"{rule.rule_field} {rule.operator} '{rule.data}'"]
+                    groups[rule.group] = [f"{rule.rule_field} {rule.operator} '{escaped_data}'"]
                 else:
-                    groups[rule.group].append(f"{rule.rule_field} {rule.operator} '{rule.data}'")
+                    groups[rule.group].append(f"{rule.rule_field} {rule.operator} '{escaped_data}'")
             for key in groups.keys():
                 conditions.append(f"({' AND '.join(groups[key])})")
         if queries_groups:

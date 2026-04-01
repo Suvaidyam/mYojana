@@ -22,7 +22,7 @@ def get_installed_apps():
 
 def create_condition(scheme, _tbl_pre=""):
     if isinstance(scheme, str):
-        raise "No rules"
+        raise frappe.ValidationError("No rules defined for this scheme")
     user_role_filter = ReportFilter.set_report_filters()
     cond_str = Misc.create_condition(scheme.rules)
     filters = []
@@ -34,8 +34,9 @@ def create_condition(scheme, _tbl_pre=""):
 
 def get_beneficiary_scheme_query(scheme_doc,start=0,page_limit=10,is_limit=False,filters=[]):
     availed_sql = f""
+    _ALLOWED_FILTER_KEYS = {'name_of_the_beneficiary', 'contact_number', 'block_name', 'name_of_parents'}
     if scheme_doc.get('how_many_times_can_this_scheme_be_availed') == 'Once':
-        availed_sql = f"""
+        availed_sql = """
             AND name not in (
                 select
                     distinct parent
@@ -44,11 +45,11 @@ def get_beneficiary_scheme_query(scheme_doc,start=0,page_limit=10,is_limit=False
                 where
                     parenttype='Beneficiary Profiling'
                     and
-                    name_of_the_scheme = '{scheme_doc.name}'
+                    name_of_the_scheme = {scheme_name}
                     and
                     status IN ('Completed','Availed')
             )
-        """
+        """.format(scheme_name=frappe.db.escape(scheme_doc.name))
     condition = create_condition(scheme_doc)
     filter_condition = ""
     ward_filter = ""
@@ -57,20 +58,20 @@ def get_beneficiary_scheme_query(scheme_doc,start=0,page_limit=10,is_limit=False
     ward_join_type  = "LEFT JOIN"
     if len(filters):
         for filter_item in json.loads(filters):  # Convert filters from string to list
-            for filter_key, filter_value in filter_item.items(): 
+            for filter_key, filter_value in filter_item.items():
+                if filter_key not in _ALLOWED_FILTER_KEYS:
+                    continue
+                escaped_val = frappe.db.escape(filter_value)[1:-1]  # strip surrounding quotes added by escape
                 if filter_key == 'name_of_the_beneficiary':
-                    filter_condition += f" AND LOWER({filter_key}) LIKE LOWER('{filter_value}%')"
+                    filter_condition += f" AND LOWER(name_of_the_beneficiary) LIKE LOWER('{escaped_val}%')"
                 elif filter_key == 'contact_number':
-                    filter_condition += f" AND {filter_key} LIKE '%{filter_value}%'"
+                    filter_condition += f" AND contact_number LIKE '%{escaped_val}%'"
                 elif filter_key == 'block_name':
-                    ward_filter += f" AND LOWER(block_name) LIKE LOWER('{filter_value}%')"
+                    ward_filter += f" AND LOWER(block_name) LIKE LOWER('{escaped_val}%')"
                     ward_join_type = "INNER JOIN"
                 elif filter_key == 'name_of_parents':
-                    primary_member_filter += f" AND LOWER(name_of_parents) LIKE LOWER('{filter_value}%')"
+                    primary_member_filter += f" AND LOWER(name_of_parents) LIKE LOWER('{escaped_val}%')"
                     pm_join_type = "INNER JOIN"
-                else:
-                    pm_join_type = "LEFT JOIN"
-                    ward_join_type = "LEFT JOIN"
     pagination = ""
     if is_limit:
         pagination = f"LIMIT {page_limit} OFFSET {start}"
@@ -91,9 +92,10 @@ def get_beneficiary_scheme_query(scheme_doc,start=0,page_limit=10,is_limit=False
     return sql
 
 def get_total_beneficiary_count_query(scheme_doc , start=0,page_limit=10,filters=[]):
-    availed_sql = f""
+    availed_sql = ""
+    _ALLOWED_FILTER_KEYS = {'name_of_the_beneficiary', 'contact_number', 'block_name', 'name_of_parents'}
     if scheme_doc.get('how_many_times_can_this_scheme_be_availed') == 'Once':
-        availed_sql = f"""
+        availed_sql = """
             AND name not in (
                 select
                     distinct parent
@@ -102,11 +104,11 @@ def get_total_beneficiary_count_query(scheme_doc , start=0,page_limit=10,filters
                 where
                     parenttype='Beneficiary Profiling'
                     and
-                    name_of_the_scheme = '{scheme_doc.name}'
+                    name_of_the_scheme = {scheme_name}
                     and
                     status IN ('Completed','Availed')
             )
-        """
+        """.format(scheme_name=frappe.db.escape(scheme_doc.name))
     condition = create_condition(scheme_doc)
     filter_condition = ""
     ward_filter = ""
@@ -115,20 +117,20 @@ def get_total_beneficiary_count_query(scheme_doc , start=0,page_limit=10,filters
     ward_join_type  = "LEFT JOIN"
     if len(filters):
         for filter_item in json.loads(filters):  # Convert filters from string to list
-            for filter_key, filter_value in filter_item.items(): 
+            for filter_key, filter_value in filter_item.items():
+                if filter_key not in _ALLOWED_FILTER_KEYS:
+                    continue
+                escaped_val = frappe.db.escape(filter_value)[1:-1]  # strip surrounding quotes added by escape
                 if filter_key == 'name_of_the_beneficiary':
-                    filter_condition += f" AND {filter_key} LIKE '{filter_value}%'"
+                    filter_condition += f" AND name_of_the_beneficiary LIKE '{escaped_val}%'"
                 elif filter_key == 'contact_number':
-                    filter_condition += f" AND {filter_key} LIKE '%{filter_value}%'"
+                    filter_condition += f" AND contact_number LIKE '%{escaped_val}%'"
                 elif filter_key == 'block_name':
-                    ward_filter += f" AND block_name LIKE '{filter_value}%'"
+                    ward_filter += f" AND block_name LIKE '{escaped_val}%'"
                     ward_join_type = "INNER JOIN"
                 elif filter_key == 'name_of_parents':
-                    primary_member_filter += f" AND name_of_parents LIKE '{filter_value}%'"
+                    primary_member_filter += f" AND name_of_parents LIKE '{escaped_val}%'"
                     pm_join_type = "INNER JOIN"
-                else:
-                    pm_join_type = "LEFT JOIN"
-                    ward_join_type = "LEFT JOIN"
 
     sql = f"""
             SELECT
@@ -193,14 +195,13 @@ def most_eligible_ben():
     scheame_query = f"""select name  from `tabScheme` """
     get_all_scheame = frappe.db.sql(scheame_query, as_dict=True)
     for scheme in get_all_scheame:
-        get_rules = f"""select  rule_field, operator, data from `tabScheme` as _ts JOIN `tabRule Engine Child` as _tsc on _tsc.parent = _ts.name where _ts.name_of_the_scheme ='{scheme.name.replace("'", "''")}';"""
-
-        # get_rules = f"""select  rule_field, operator, data from `tabScheme` as _ts JOIN `tabRule Engine Child` as _tsc on _tsc.parent = _ts.name where _ts.name_of_the_scheme ='{scheme.name}';"""
-        rules = frappe.db.sql(get_rules, as_dict=True)
-        condition_str =""
+        get_rules = """select rule_field, operator, data from `tabScheme` as _ts JOIN `tabRule Engine Child` as _tsc on _tsc.parent = _ts.name where _ts.name_of_the_scheme = %s"""
+        rules = frappe.db.sql(get_rules, (scheme.name,), as_dict=True)
+        condition_str = ""
         if rules:
             for rule in rules:
-                condition_str = f"""{condition_str} {rule.rule_field} {rule.operator} '{rule.data}' AND"""
+                escaped_data = frappe.db.escape(str(rule.data))[1:-1]
+                condition_str = f"""{condition_str} {rule.rule_field} {rule.operator} '{escaped_data}' AND"""
             # condition_str = f"{condition_str} "
         else:
             condition_str = ""
@@ -272,6 +273,6 @@ def get_user_permission(user, join_con=[]):
         LEFT JOIN `tabVillage` AS TV ON UP.for_value = TV.name AND LOWER(UP.allow) = 'village'
         LEFT JOIN `tabCentre` AS TC ON UP.for_value = TC.name AND LOWER(UP.allow) = 'centre'
         LEFT JOIN `tabSub Centre` AS TCS ON UP.for_value = TCS.name AND LOWER(UP.allow) = 'sub centre'
-        WHERE UP.user = '{user}'
+        WHERE UP.user = %s
     """
-   return frappe.db.sql(sql_query, as_dict=True)
+   return frappe.db.sql(sql_query, (user,), as_dict=True)
