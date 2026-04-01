@@ -1,6 +1,14 @@
 import frappe
 
 class family:
+    """
+    Service class for managing Primary Member (family head) records.
+
+    A family is identified by the beneficiary's contact number.  When a
+    beneficiary is registered as a new family head, a corresponding Primary
+    Member document is created.  Subsequent beneficiaries sharing the same
+    contact number are linked to the existing Primary Member.
+    """
     def create(beneficiary):
         print("family[create]")
         family_doc = frappe.new_doc("Primary Member")

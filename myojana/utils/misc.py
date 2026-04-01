@@ -1,8 +1,23 @@
 import frappe
 
 class Misc:
+    """Utility helpers for converting Rule Engine entries into Frappe
+    ORM filter lists or raw SQL WHERE clause fragments."""
+
     @staticmethod
     def rules_to_filters(rules, obj=False):
+        """
+        Convert a list of Rule Engine Child rows into Frappe filter lists.
+
+        Args:
+            rules (list): Rule Engine Child document list (each has rule_field,
+                operator, data, group).
+            obj (bool): If True, return a dict keyed by group name instead of a
+                nested list.
+
+        Returns:
+            list | dict: Frappe-compatible filter groups.
+        """
         filters = []
         if rules is not None and len(rules):
             groups = {}

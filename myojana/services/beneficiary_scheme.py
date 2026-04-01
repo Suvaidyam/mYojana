@@ -1,7 +1,25 @@
 import frappe
 from myojana.utils.misc import Misc
+
 class BeneficiaryScheme:
+	"""
+	Service class for matching beneficiaries against scheme eligibility rules.
+
+	Uses the Rule Engine to evaluate which schemes a given beneficiary qualifies
+	for and returns them sorted by match percentage (descending).
+	"""
     def run(beneficiary=None):
+        """
+        Evaluate all enabled schemes against a beneficiary and annotate each
+        scheme with rule match details.
+
+        Args:
+            beneficiary (str): Name of the Beneficiary Profiling document.
+
+        Returns:
+            list[dict]: Schemes annotated with 'rules', 'total_rules',
+                        'matching_rules', and 'matching_rules_per'.
+        """
         schemes = frappe.get_list('Scheme', fields=['name', 'name_of_department', 'milestone'])
         for scheme in schemes:
             doc = frappe.get_doc("Scheme", scheme.name)
@@ -65,6 +83,19 @@ class BeneficiaryScheme:
         return False if len(count_list) else True
 
     def get_schemes(beneficiary=None):
+        """
+        Return all enabled schemes sorted by eligibility match percentage for
+        a given beneficiary.
+
+        Args:
+            beneficiary (str | None): Name of the Beneficiary Profiling document.
+                If None, all schemes are returned with zero match scores.
+
+        Returns:
+            list[dict]: Schemes sorted by 'matching_rules_per' descending.
+                Each entry includes 'groups', 'rules', 'total_rules',
+                'matching_rules', 'matching_rules_per', and 'available'.
+        """
         schemes = frappe.get_list('Scheme', fields=['name','name_of_the_scheme', 'name_of_department', 'milestone', 'how_many_times_can_this_scheme_be_availed'],  filters={'enabled': '1'})
         for scheme in schemes:
             doc = frappe.get_doc("Scheme", scheme.name)
