@@ -38,7 +38,7 @@ def test_auth_key(auth_key):
 def send_id(doc):
     template_name, auth_key , integrated_number = frappe.db.get_value('mYojana Settings', None, ['id_card_template', 'auth_key' ,'integrated_number'])
 
-    print("template_name",auth_key)
+    # auth_key intentionally not logged
     if not auth_key:
         frappe.throw(_("Please set Auth Key in mYojana Settings"))
 
@@ -87,7 +87,6 @@ def send_id(doc):
     conn.request("POST", "/api/v5/whatsapp/whatsapp-outbound-message/bulk/", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    print(data.decode("utf-8"))
     return data.decode("utf-8")
 
 @frappe.whitelist()
@@ -106,5 +105,4 @@ def send(phoneNo):
     conn.request("POST", "/wa/api/v1/msg", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    print("///////////////////////////////////////////////////////", data)
     return json.loads(data.decode("utf-8"))
