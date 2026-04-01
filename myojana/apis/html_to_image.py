@@ -23,7 +23,7 @@ def file_to_base64(file_path):
     with open(file_path, "rb") as file:
         return base64.b64encode(file.read()).decode('utf-8')
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def create_image(ref_doc, tepmlate_name):
     template = frappe.get_doc("App Template", tepmlate_name)
     context,doc = set_context_data(template.ref_doctype,ref_doc)
@@ -63,7 +63,7 @@ def set_context_data(doctype, name):
                     base64_data =  f"data:image/png;base64,{file_to_base64(file_path)}"
                     doc.set(field, base64_data)
     return doc.as_dict(),doc
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def preview_image(doctype, doc, template, options=None):
     context, doc = set_context_data(doctype,doc)
     # return template, context
@@ -86,7 +86,7 @@ def preview_image(doctype, doc, template, options=None):
     image_binary = imgkit.from_string(processed_html, False, options=options)
     return base64.b64encode(image_binary).decode('utf-8')
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def preview_doc_template(doc):
     template_name = frappe.db.get_single_value('mYojana Settings', 'id_card_template')
     if not template_name:
