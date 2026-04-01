@@ -57,6 +57,6 @@ class family:
                     # print("_doc_before_save[IF->IF->IF] del_doc",del_doc)
 
     def delete_family(beneficiary):
-        delate_family = frappe.db.delete("Primary Member", {
+        result = frappe.db.delete("Primary Member", {
                         "name": beneficiary.contact_number})
-        return delate_family
+        return result

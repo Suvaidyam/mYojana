@@ -1,5 +1,5 @@
 import frappe
-from myojana.services.beneficiary_scheme import BeneficaryScheme
+from myojana.services.beneficiary_scheme import BeneficiaryScheme
 from myojana.utils.misc import Misc
 # from myojana.utils.filter import Filter
 from myojana.utils.report_filter import ReportFilter
@@ -22,7 +22,7 @@ def get_installed_apps():
 
 def create_condition(scheme, _tbl_pre=""):
     if isinstance(scheme, str):
-        raise "No rules"
+        raise frappe.ValidationError("No rules defined for this scheme")
     user_role_filter = ReportFilter.set_report_filters()
     cond_str = Misc.create_condition(scheme.rules)
     filters = []
@@ -147,7 +147,7 @@ def get_total_beneficiary_count_query(scheme_doc , start=0,page_limit=10,filters
     return sql
 @frappe.whitelist(allow_guest=True)
 def execute(name=None):
-    return BeneficaryScheme.get_schemes(name)
+    return BeneficiaryScheme.get_schemes(name)
 
 @frappe.whitelist(allow_guest=True)
 def eligible_beneficiaries(scheme=None, columns=[], filters=[], start=0, page_imit=10,is_limit=False):

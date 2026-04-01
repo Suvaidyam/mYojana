@@ -1,6 +1,6 @@
 import frappe
 from myojana.utils.misc import Misc
-class BeneficaryScheme:
+class BeneficiaryScheme:
     def run(beneficiary=None):
         schemes = frappe.get_list('Scheme', fields=['name', 'name_of_department', 'milestone'])
         for scheme in schemes:
@@ -26,7 +26,7 @@ class BeneficaryScheme:
             scheme['total_rules'] = len(rule_list)
             scheme['matching_rules'] = matching_counter
             scheme['matching_rules_per'] = 0
-            if matching_counter > 0:
+            if matching_counter > 0 and scheme['total_rules'] > 0:
                 scheme['matching_rules_per'] = (matching_counter/scheme['total_rules'])*100
         return schemes
     def validate(beneficiary, condition):
@@ -89,7 +89,7 @@ class BeneficaryScheme:
                 scheme['total_rules'] = percentage_sorted_list[0]['total'] if len(percentage_sorted_list)>0 else 0
                 scheme['matching_rules'] = percentage_sorted_list[0]['matched'] if len(percentage_sorted_list)>0 else 0
                 scheme['matching_rules_per'] = 0
-                if scheme['matching_rules'] > 0:
+                if scheme['matching_rules'] > 0 and scheme['total_rules'] > 0:
                     scheme['matching_rules_per'] = ((scheme['matching_rules']/scheme['total_rules'])*100)
         res_schemes_denominator_sort = sorted(schemes, key=lambda x: x.get('total_rules', 0), reverse=True)
         res_schemes = sorted(res_schemes_denominator_sort, key=lambda x: x.get('matching_rules_per', 0), reverse=True)
