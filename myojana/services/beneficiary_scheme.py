@@ -46,22 +46,22 @@ class BeneficaryScheme:
         obj['percentage'] = ((obj['matched']/obj['total'])*100) if obj['total'] > 0 else 0
         return obj
     def has_availed(beneficiary, scheme):
-        sql = f"""
+        sql = """
         select
             name
         from
             `tabScheme Child`
         where
-            parent = '{beneficiary}'
+            parent = %s
             and
             parenttype='Beneficiary Profiling'
             and
-            name_of_the_scheme = '{scheme}'
+            name_of_the_scheme = %s
             and
             status IN ('Completed','Availed')
         limit 1
         """
-        count_list = frappe.db.sql(sql, as_dict=True)
+        count_list = frappe.db.sql(sql, (beneficiary, scheme), as_dict=True)
         return False if len(count_list) else True
 
     def get_schemes(beneficiary=None):
