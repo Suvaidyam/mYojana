@@ -89,7 +89,8 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Date of registration",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "name_of_the_beneficiary",
@@ -112,7 +113,8 @@
    "fieldname": "date_of_birth",
    "fieldtype": "Date",
    "label": "Date of birth",
-   "mandatory_depends_on": "eval:!(doc.is_bulk_imported == 1 && doc.__islocal)"
+   "mandatory_depends_on": "eval:!(doc.is_bulk_imported == 1 && doc.__islocal)",
+   "search_index": 1
   },
   {
    "fieldname": "completed_age",
@@ -243,14 +245,16 @@
    "fieldtype": "Link",
    "label": "State",
    "mandatory_depends_on": "eval:!(doc.is_bulk_imported == 1 && doc.__islocal)",
-   "options": "State"
+   "options": "State",
+   "search_index": 1
   },
   {
    "fieldname": "district",
    "fieldtype": "Link",
    "label": "District",
    "mandatory_depends_on": "eval:!(doc.is_bulk_imported == 1 && doc.__islocal)",
-   "options": "District"
+   "options": "District",
+   "search_index": 1
   },
   {
    "fieldname": "column_break_hspz",
@@ -354,7 +358,8 @@
    "in_list_view": 1,
    "label": "Select primary member",
    "mandatory_depends_on": "eval:doc.has_anyone_from_your_family_visisted_before == \"Yes\"",
-   "options": "Primary Member"
+   "options": "Primary Member",
+   "search_index": 1
   },
   {
    "fieldname": "scheme_tab",
