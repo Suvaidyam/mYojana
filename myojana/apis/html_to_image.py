@@ -29,8 +29,8 @@ def create_image(ref_doc, tepmlate_name):
     context,doc = set_context_data(template.ref_doctype,ref_doc)
     try:
         options = json.loads(options)
-    except:
-        options = None    
+    except (json.JSONDecodeError, TypeError):
+        options = None
     if not options:
         options = {
             'width': 547,
@@ -76,8 +76,8 @@ def preview_image(doctype, doc, template, options=None):
     
     try:
         options = json.loads(options)
-    except:
-        options = None    
+    except (json.JSONDecodeError, TypeError):
+        options = None
     if not options:
         options = {
             'width': 547,

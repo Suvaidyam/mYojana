@@ -1,5 +1,5 @@
 import frappe
-from myojana.services.beneficiary_scheme import BeneficaryScheme
+from myojana.services.beneficiary_scheme import BeneficiaryScheme
 from myojana.utils.misc import Misc
 # from myojana.utils.filter import Filter
 from myojana.utils.report_filter import ReportFilter
@@ -149,7 +149,7 @@ def get_total_beneficiary_count_query(scheme_doc , start=0,page_limit=10,filters
     return sql
 @frappe.whitelist()
 def execute(name=None):
-    return BeneficaryScheme.get_schemes(name)
+    return BeneficiaryScheme.get_schemes(name)
 
 @frappe.whitelist()
 def eligible_beneficiaries(scheme=None, columns=[], filters=[], start=0, page_imit=10,is_limit=False):
