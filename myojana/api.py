@@ -7,7 +7,7 @@ import json
 
 from myojana.utils.htmltoimg import create_image
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_image(ben_id):
     return create_image(ben_id)
 
@@ -15,7 +15,7 @@ def get_image(ben_id):
 def get_mYojana_settings():
     return frappe.get_doc('mYojana Settings')
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_installed_apps():
     installed_apps = frappe.get_installed_apps()
     return installed_apps
@@ -147,11 +147,11 @@ def get_total_beneficiary_count_query(scheme_doc , start=0,page_limit=10,filters
     """
             # LIMIT {page_limit} OFFSET {start}
     return sql
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def execute(name=None):
     return BeneficaryScheme.get_schemes(name)
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def eligible_beneficiaries(scheme=None, columns=[], filters=[], start=0, page_imit=10,is_limit=False):
     # filter value is getting hear
     # print("filter", filters)
@@ -189,7 +189,7 @@ def eligible_beneficiaries(scheme=None, columns=[], filters=[], start=0, page_im
         res['count'].update(count_data[0])
     return res
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def most_eligible_ben():
     scheam_ben_count =[]
     scheame_query = f"""select name  from `tabScheme` """
@@ -214,7 +214,7 @@ def most_eligible_ben():
     top_5_schemes = sorted_schemes[:5]
     return top_5_schemes
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def top_schemes():
     milestones = frappe.get_list("Milestone category", fields=['name'])
     # user_role_filter = Filter.set_query_filters()
