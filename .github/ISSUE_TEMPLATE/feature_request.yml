@@ -1,0 +1,67 @@
+name: Feature / Enhancement Request
+description: Propose a new feature or an improvement to an existing one.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Great ideas make mYojana better for NGOs and beneficiaries. Please be as specific as possible.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What pain point or gap does this address? Who is affected and how often?
+      placeholder: "As a [role], I cannot ... which means ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the feature in enough detail that a developer could implement it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Bullet-point list of conditions that must be true for this to be "done".
+      placeholder: |
+        - [ ] User can ...
+        - [ ] System validates ...
+        - [ ] Edge case X is handled by ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+      description: What is explicitly NOT part of this request? (Helps prevent scope creep.)
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Affected module
+      options:
+        - myojana (core)
+        - master (reference data)
+        - rule_engine
+        - sva_report
+        - Infrastructure / DevOps
+        - Multiple / unsure
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I searched existing open issues and this is not a duplicate.
+          required: true
+        - label: This fits within the mYojana scope (social protection / beneficiary management).
+          required: false
