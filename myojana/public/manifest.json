@@ -1,0 +1,62 @@
+{
+	"name": "mYojana",
+	"short_name": "mYojana",
+	"description": "Social Protection Management System — register beneficiaries and track welfare scheme applications",
+	"start_url": "/app/beneficiary-profiling",
+	"scope": "/app/",
+	"display": "standalone",
+	"orientation": "any",
+	"background_color": "#ffffff",
+	"theme_color": "#1F6FEB",
+	"lang": "en",
+	"dir": "auto",
+	"id": "myojana",
+	"categories": ["business", "productivity", "utilities"],
+	"prefer_related_applications": false,
+	"handle_links": "preferred",
+	"launch_handler": {
+		"client_mode": "navigate-existing"
+	},
+	"icons": [
+		{
+			"src": "/assets/myojana/images/mYojana.png",
+			"sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/assets/myojana/images/mYojana.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Register Beneficiary",
+			"short_name": "New",
+			"url": "/app/beneficiary-profiling/new-beneficiary-profiling-1",
+			"description": "Register a new beneficiary",
+			"icons": [
+				{
+					"src": "/assets/myojana/images/mYojana.png",
+					"sizes": "96x96",
+					"type": "image/png"
+				}
+			]
+		},
+		{
+			"name": "Beneficiaries",
+			"short_name": "List",
+			"url": "/app/beneficiary-profiling",
+			"description": "View all beneficiaries",
+			"icons": [
+				{
+					"src": "/assets/myojana/images/mYojana.png",
+					"sizes": "96x96",
+					"type": "image/png"
+				}
+			]
+		}
+	]
+}
