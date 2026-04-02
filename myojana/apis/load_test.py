@@ -207,11 +207,13 @@ def generate_random_bulk_data():
     return data
 @frappe.whitelist()
 def create_beneficiary_profiling(count=10):
-    if frappe.session.user == "Administrator":
-        for _ in range(count):
-            beneficiary = frappe.new_doc("Beneficiary Profiling")
-            beneficiary.update(generate_random_bulk_data())
-            beneficiary.insert()
-        return count
-    else:
-        return "Invalid access to the api!"
+    if not frappe.conf.developer_mode:
+        frappe.throw("This API is only available in developer mode")
+    if "Administrator" not in frappe.get_roles(frappe.session.user):
+        frappe.throw("Access denied")
+    count = min(int(count), 100)  # cap at 100 to prevent DoS
+    for _ in range(count):
+        beneficiary = frappe.new_doc("Beneficiary Profiling")
+        beneficiary.update(generate_random_bulk_data())
+        beneficiary.insert()
+    return count

@@ -43,7 +43,6 @@ def create_image(ref_doc, tepmlate_name):
         file = save_file(f"{doc.name}.png", image_binary, template.ref_doctype, doc.name, folder=None, decode=False, is_private=0, df=None)
         return file,doc
     except Exception as e:
-        print("Exception::",e)
         frappe.log_error(f"Error in rendering template: {e}", "Check Syntax")
         return None,None
     
@@ -70,7 +69,6 @@ def preview_image(doctype, doc, template, options=None):
     try:
         processed_html = render_template(template, context)
     except Exception as e:
-        print("Exception::",e)
         frappe.log_error(f"Error in rendering template: {e}", "Check Syntax")
         return None
     
@@ -91,7 +89,6 @@ def preview_doc_template(doc):
     template_name = frappe.db.get_single_value('mYojana Settings', 'id_card_template')
     if not template_name:
         frappe.throw(_("Please set ID Card Template in mYojana Settings"))
-    print("template_name",template_name)
     template = frappe.get_doc('App Template', template_name)
     if not template:
         frappe.throw(_("Please set ID Card Template in Whats App Template"))
